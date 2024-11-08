@@ -1,10 +1,19 @@
-[gd_scene load_steps=2 format=3 uid="uid://wydfltiy14rf"]
+[gd_scene load_steps=4 format=3 uid="uid://wydfltiy14rf"]
+
+[ext_resource type="Script" path="res://Scripts/Enemies/sniper.gd" id="1_7w6y7"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_acg0h"]
 margin = 0.0
 size = Vector3(5, 5, 5)
 
+[sub_resource type="BoxMesh" id="BoxMesh_l7kfs"]
+size = Vector3(3, 3, 3)
+
 [node name="Sniper" type="CharacterBody3D"]
+script = ExtResource("1_7w6y7")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 shape = SubResource("BoxShape3D_acg0h")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+mesh = SubResource("BoxMesh_l7kfs")
