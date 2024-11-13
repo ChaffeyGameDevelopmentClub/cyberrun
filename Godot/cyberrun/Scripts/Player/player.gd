@@ -4,53 +4,66 @@ extends CharacterBody3D
 var paused = false
 
 #dont tell them this but i stole everything from backwaters
+#also dont tell them but im using this as my checklist hahahahahahahahaha
+#TODO:
+#Sliding
+#Wall Running
+#Dashing
+#Crosshair
+#General UI
+#oh wow theres a lot
+#help me
 
 #SFX
 #@export var Walk: AudioStreamPlayer
 #@export var Run: AudioStreamPlayer
-#Jumping
+#Jumping :3
 const JUMP_VELOCITY = 4.5
-var max_double_jump : int = 3
-var double_jumps : int = 3
+var max_double_jump : int = 2
+var double_jumps : int = 2
+#Toggles for your actions, just so that its not a pain in the ass later
+@export var canDJump = false
+@export var canDash = true
+@export var canSlide = true
 #Speed and camera sensitivity vars
 @export var sensitivity_camera = .001
-@export var player_speed = 2.5
-@export var neck : Node3D
+@export var player_speed = 6
+@export var head : Node3D
 @export var camera : Camera3D
-#Stamina System, tweak later
-@export var stamina = 100
-@export var max_stamina = 200
-@export var isSprint = false
-@export var isTired = false
+#gorl what does this mean
 @export var isSound = false
-#Camera effects color might not be used im sorry :(
-@export var camera_color = 0
+#Headbob, it affects where you aim so like.... maybe not too much unless im goated and figure out how to seperate the two
+const HEADBOB_MOVE_AMT = 0.06
+const HEADBOB_FREQ = 2.4
+var headbob_time := 0.0
 
 #pause menu or something idk
 @export var pause : Control
-#Animation vars including another fucking boolean because it will play over itself
-@export var headBobbing : AnimationPlayer
-var isAnimating = false
 
 func _ready() -> void:
 	pass
 
 func _unhandled_input(event: InputEvent) -> void:
-	#clamps values, for some reason it works better here so lets call it magic
-	stamina = clamp(stamina,0,max_stamina)
-
+	#What the fuck does any of this mean -Kev
 	if get_tree().paused==false:
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 		if event is InputEventMouseMotion:
-			neck.rotate_y(-event.relative.x*sensitivity_camera)
+			head.rotate_y(-event.relative.x*sensitivity_camera)
 			camera.rotate_x(-event.relative.y*sensitivity_camera)
 			camera.rotation.x = clamp(camera.rotation.x, deg_to_rad(-80), deg_to_rad(70))
+
+func _headbob_effect(delta):
+	headbob_time += delta * self.velocity.length()
+	camera.transform.origin = Vector3(
+		cos(headbob_time * HEADBOB_FREQ * 0.5) * HEADBOB_MOVE_AMT,
+		cos(headbob_time * HEADBOB_FREQ) * HEADBOB_MOVE_AMT,
+		0
+	)
 
 	if get_tree().paused==true:
 		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 		pass
 
-#literally the everything function
 func _physics_process(delta: float) -> void:
 	# Add the gravity.
 	if not is_on_floor():
@@ -63,66 +76,29 @@ func _physics_process(delta: float) -> void:
 	# Jumping or something
 	if Input.is_action_just_pressed("jump") and is_on_floor():
 		velocity.y = JUMP_VELOCITY
-	if Input.is_action_just_pressed("jump") and not is_on_floor():
+	#please tell me theres another way to write this PLEASE
+	if Input.is_action_just_pressed("jump") and not is_on_floor() and canDJump:
 		if double_jumps <= 0:
-			#haha no jumping for you
 			pass
 		else:
-			velocity.y += JUMP_VELOCITY
+			velocity.y = JUMP_VELOCITY
 			double_jumps -= 1
-			print("fent left: ")
-			print(double_jumps)
 
 	# Get the input direction and handle the movement/deceleration.
 	# As good practice, you should replace UI actions with custom gameplay actions.
 	var input_dir := Input.get_vector("left", "right", "up", "down")
-	var direction = (neck.transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
+	var direction = (head.transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
 	if direction:
-		#Plays the head bobbing animation while a direction is being played, it should be easy to
-		#edit within the animation tab so LOL
-		#Do Later
-		#if isSprint ==false:
-			#if isAnimating == false:
-				#isAnimating = true
-				#headBobbing.play("player_walk_headbob")
-				#await(headBobbing.animation_finished)
-				#isAnimating =false
-		#if isSprint == true:
-			#if isAnimating == false:
-				#isAnimating = true
-				#headBobbing.play("player_run_headbob")
-				#await(headBobbing.animation_finished)
-				#isAnimating =false
 		velocity.x = direction.x * player_speed
 		velocity.z = direction.z * player_speed
 	else:
 		velocity.x = move_toward(velocity.x, 0, player_speed)
 		velocity.z = move_toward(velocity.z, 0, player_speed)
-	#Sprint
-	if direction and isSprint==true and isTired!=true:
-		stamina -= 2
-	else:
-		if stamina < 200:
-			stamina +=1
-	if stamina <10:
-		isTired=true
-	elif stamina>180:
-		isTired=false
+	_headbob_effect(delta)
 	move_and_slide()
 
-#input testing but we need to get rid of test inputs in the final build
+#inputs, i think?
 func _input(event: InputEvent) -> void:
-	#Sprint
-	if Input.is_action_pressed("sprint") and isTired==false:
-		player_speed = 6
-		isSprint=true
-	elif isTired==true: 
-		player_speed = 2.5
-		isSprint=false
-	if Input.is_action_just_released("sprint"):
-		isSprint = false
-		player_speed = 2.5
-		pass
 	#walking sound DELETE ASAP
 	if velocity.x!=0 and velocity.z!=0 and isSound != true and is_on_floor():
 		#Sound stuff, add in later
