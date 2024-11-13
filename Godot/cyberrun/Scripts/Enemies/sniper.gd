@@ -4,25 +4,41 @@ extends CharacterBody3D
 const SPEED = 5.0
 const JUMP_VELOCITY = 4.5
 
-
+@export var ani_play: AnimationPlayer
+@export var player: CharacterBody3D
+@export var cool_down_time: Timer 
+@export var charging_time: Timer
+@export var gun: Node3D
+@export var ray: RayCast3D
+var charging: bool
+var cool_down:bool
 func _physics_process(delta: float) -> void:
 	# Add the gravity.
-	if not is_on_floor():
-		velocity += get_gravity() * delta
 
-	# Handle jump.
-	if Input.is_action_just_pressed("ui_accept") and is_on_floor():
-		velocity.y = JUMP_VELOCITY
 
-	# Get the input direction and handle the movement/deceleration.
-	# As good practice, you should replace UI actions with custom gameplay actions.
-	var input_dir := Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
-	var direction := (transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
-	if direction:
-		velocity.x = direction.x * SPEED
-		velocity.z = direction.z * SPEED
-	else:
-		velocity.x = move_toward(velocity.x, 0, SPEED)
-		velocity.z = move_toward(velocity.z, 0, SPEED)
+#add recoior 
+#aim for the player 
+
+	if not charging: 
+		gun.look_at(player.global_transform.origin)
+#fire
+	if ray.get_collider() == player: 
+		charging= true
+		charging_time.start()
+
+
+
+
 
 	move_and_slide()
+
+
+func _on_charging_time_timeout() -> void:
+	charging= false# Replace with function body.
+		#damaged  
+	#cool down
+	cool_down_time.start()
+
+
+func _on_gun_cooldown_timeout() -> void:
+	cool_down= false # Replace with function body.
