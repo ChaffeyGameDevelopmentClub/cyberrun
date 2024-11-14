@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3 uid="uid://c2rllaxxvk3n0"]
+
+[ext_resource type="ArrayMesh" uid="uid://bx62x84pm20gu" path="res://Wooden Barrel.obj" id="1_xr2e2"]
+
+[node name="Node3D" type="Node3D"]
+
+[node name="WoodenBarrel" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.137665, 1.64548, -0.377123)
+mesh = ExtResource("1_xr2e2")
