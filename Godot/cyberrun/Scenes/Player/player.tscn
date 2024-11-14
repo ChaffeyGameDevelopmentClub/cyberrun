@@ -1,6 +1,9 @@
-[gd_scene load_steps=4 format=3 uid="uid://di552ovbiyxq0"]
+[gd_scene load_steps=7 format=3 uid="uid://di552ovbiyxq0"]
 
 [ext_resource type="Script" path="res://Scripts/Player/player.gd" id="1_oim34"]
+[ext_resource type="Script" path="res://Scripts/Player/reticle.gd" id="2_ls355"]
+[ext_resource type="Theme" uid="uid://bfpfb86hf817k" path="res://Scenes/Menus/UI Themes/Debug_Panel_Theme.tres" id="3_syqpq"]
+[ext_resource type="Script" path="res://Scripts/Player/debug_panel.gd" id="4_p7xg7"]
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_ri84d"]
 height = 3.0
@@ -24,3 +27,62 @@ shape = SubResource("CapsuleShape3D_n8h3h")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.463415, 0)
 
 [node name="Camera3D" type="Camera3D" parent="Head"]
+
+[node name="UI" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+
+[node name="Reticle" type="CenterContainer" parent="UI" node_paths=PackedStringArray("RETICLE_LINES", "PLAYER_CONTROLLER")]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("2_ls355")
+RETICLE_LINES = [NodePath("Top"), NodePath("Right"), NodePath("Left"), NodePath("Bottom")]
+PLAYER_CONTROLLER = NodePath("../..")
+
+[node name="Top" type="Line2D" parent="UI/Reticle"]
+points = PackedVector2Array(0, -5, 0, -15)
+width = 2.0
+
+[node name="Right" type="Line2D" parent="UI/Reticle"]
+points = PackedVector2Array(5, 0, 15, 0)
+width = 2.0
+
+[node name="Left" type="Line2D" parent="UI/Reticle"]
+points = PackedVector2Array(-5, 0, -15, 0)
+width = 2.0
+
+[node name="Bottom" type="Line2D" parent="UI/Reticle"]
+points = PackedVector2Array(0, 5, 0, 15)
+width = 2.0
+
+[node name="DebugPanel" type="PanelContainer" parent="UI" node_paths=PackedStringArray("property_container")]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = 210.0
+offset_bottom = 50.0
+theme = ExtResource("3_syqpq")
+script = ExtResource("4_p7xg7")
+property_container = NodePath("MarginContainer/VBoxContainer")
+
+[node name="MarginContainer" type="MarginContainer" parent="UI/DebugPanel"]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/DebugPanel/MarginContainer"]
+layout_mode = 2

@@ -9,7 +9,6 @@ var paused = false
 #Sliding
 #Wall Running
 #Dashing
-#Crosshair
 #General UI
 #oh wow theres a lot
 #help me
@@ -22,7 +21,7 @@ const JUMP_VELOCITY = 4.5
 var max_double_jump : int = 2
 var double_jumps : int = 2
 #Toggles for your actions, just so that its not a pain in the ass later
-@export var canDJump = false
+@export var canDJump = true
 @export var canDash = true
 @export var canSlide = true
 #Speed and camera sensitivity vars
@@ -51,7 +50,11 @@ func _unhandled_input(event: InputEvent) -> void:
 			head.rotate_y(-event.relative.x*sensitivity_camera)
 			camera.rotate_x(-event.relative.y*sensitivity_camera)
 			camera.rotation.x = clamp(camera.rotation.x, deg_to_rad(-80), deg_to_rad(70))
+	if get_tree().paused==true:
+		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+		pass
 
+#Actually does the headbobbing, stolen btw
 func _headbob_effect(delta):
 	headbob_time += delta * self.velocity.length()
 	camera.transform.origin = Vector3(
@@ -59,10 +62,6 @@ func _headbob_effect(delta):
 		cos(headbob_time * HEADBOB_FREQ) * HEADBOB_MOVE_AMT,
 		0
 	)
-
-	if get_tree().paused==true:
-		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
-		pass
 
 func _physics_process(delta: float) -> void:
 	# Add the gravity.
@@ -110,7 +109,8 @@ func _input(event: InputEvent) -> void:
 	pass
 	#these functions will handle pause for now but I THINK this is the neatest it can look rn
 	if Input.is_action_just_pressed("pause"):
-		Pause()
+		get_tree().quit()
+		#Pause()
 #Pause, completely pauses everything so you can go into options
 func Pause():
 	if get_tree().paused == false:
