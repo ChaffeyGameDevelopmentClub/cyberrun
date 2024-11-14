@@ -17,7 +17,7 @@ var paused = false
 #@export var Walk: AudioStreamPlayer
 #@export var Run: AudioStreamPlayer
 #Jumping :3
-const JUMP_VELOCITY = 4.5
+const jump_velocity = 4.5
 var max_double_jump : int = 2
 var double_jumps : int = 2
 #Toggles for your actions, just so that its not a pain in the ass later
@@ -32,15 +32,15 @@ var double_jumps : int = 2
 #gorl what does this mean
 @export var isSound = false
 #Headbob, it affects where you aim so like.... maybe not too much unless im goated and figure out how to seperate the two
-const HEADBOB_MOVE_AMT = 0.06
-const HEADBOB_FREQ = 2.4
+const headbob_move_amt = 0.06
+const headbob_freq = 2.4
 var headbob_time := 0.0
 
 #pause menu or something idk
 @export var pause : Control
 
 func _ready() -> void:
-	pass
+	Global.player = self
 
 func _unhandled_input(event: InputEvent) -> void:
 	#What the fuck does any of this mean -Kev
@@ -58,33 +58,32 @@ func _unhandled_input(event: InputEvent) -> void:
 func _headbob_effect(delta):
 	headbob_time += delta * self.velocity.length()
 	camera.transform.origin = Vector3(
-		cos(headbob_time * HEADBOB_FREQ * 0.5) * HEADBOB_MOVE_AMT,
-		cos(headbob_time * HEADBOB_FREQ) * HEADBOB_MOVE_AMT,
+		cos(headbob_time * headbob_freq * 0.5) * headbob_move_amt,
+		cos(headbob_time * headbob_freq) * headbob_move_amt,
 		0
 	)
 
 func _physics_process(delta: float) -> void:
+	Global.debug.add_property("MovementSpeed",player_speed, 1)
+	
 	# Add the gravity.
 	if not is_on_floor():
 		velocity += get_gravity() * delta
-
+	
 	#Resets your Double Jumps
 	if is_on_floor():
 		double_jumps = max_double_jump
-
+	
 	# Jumping or something
 	if Input.is_action_just_pressed("jump") and is_on_floor():
-		velocity.y = JUMP_VELOCITY
+		velocity.y = jump_velocity
 	#please tell me theres another way to write this PLEASE
 	if Input.is_action_just_pressed("jump") and not is_on_floor() and canDJump:
 		if double_jumps <= 0:
 			pass
 		else:
-			velocity.y = JUMP_VELOCITY
+			velocity.y = jump_velocity
 			double_jumps -= 1
-
-	# Get the input direction and handle the movement/deceleration.
-	# As good practice, you should replace UI actions with custom gameplay actions.
 	var input_dir := Input.get_vector("left", "right", "up", "down")
 	var direction = (head.transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
 	if direction:
