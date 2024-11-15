@@ -1,9 +1,25 @@
-[gd_scene load_steps=2 format=3 uid="uid://c2rllaxxvk3n0"]
+[gd_scene load_steps=4 format=3 uid="uid://c2rllaxxvk3n0"]
 
-[ext_resource type="ArrayMesh" uid="uid://bx62x84pm20gu" path="res://Wooden Barrel.obj" id="1_xr2e2"]
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_yvub0"]
 
-[node name="Node3D" type="Node3D"]
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_br7qj"]
+radius = 0.689517
 
-[node name="WoodenBarrel" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.137665, 1.64548, -0.377123)
-mesh = ExtResource("1_xr2e2")
+[sub_resource type="CylinderMesh" id="CylinderMesh_xp4j8"]
+
+[node name="Root" type="Node3D"]
+
+[node name="StaticBody3D" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.18276, 3.8657, -0.377123)
+physics_material_override = SubResource("PhysicsMaterial_yvub0")
+
+[node name="Area3D" type="Area3D" parent="StaticBody3D"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D"]
+transform = Transform3D(0.998635, 0.0522314, 0, -0.0522314, 0.998635, 0, 0, 0, 1, -0.290193, -3.20044, 0.682605)
+shape = SubResource("CylinderShape3D_br7qj")
+
+[node name="WoodenBarrel" type="MeshInstance3D" parent="StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.407904, -3.05476, 0.679393)
+mesh = SubResource("CylinderMesh_xp4j8")
+skeleton = NodePath("../..")
