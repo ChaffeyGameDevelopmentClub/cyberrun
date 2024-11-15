@@ -1,4 +1,4 @@
-extends CharacterBody3D
+class_name Player extends CharacterBody3D
 #pause my menu idiot
 @export var PauseMenu: Control
 var paused = false
@@ -6,12 +6,14 @@ var paused = false
 #dont tell them this but i stole everything from backwaters
 #also dont tell them but im using this as my checklist hahahahahahahahaha
 #TODO:
-#Sliding
-#Wall Running
-#Dashing
+#Sliding, set distance at higher velocity, done from sprinting speed
+#Wall Jump, detect if on wall when moving, apply velocity opposite of direction
+#Dashing, kinda like a teleport, ask luna later lmao
 #General UI
 #oh wow theres a lot
 #help me
+#add in acceleration a bit, start at lower velocity, timer goes off and velocity ups
+#going into idle resets timer
 
 #SFX
 #@export var Walk: AudioStreamPlayer
@@ -43,7 +45,6 @@ func _ready() -> void:
 	Global.player = self
 
 func _unhandled_input(event: InputEvent) -> void:
-	#What the fuck does any of this mean -Kev
 	if get_tree().paused==false:
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 		if event is InputEventMouseMotion:
@@ -65,15 +66,12 @@ func _headbob_effect(delta):
 
 func _physics_process(delta: float) -> void:
 	Global.debug.add_property("MovementSpeed",player_speed, 1)
-	
-	# Add the gravity.
-	if not is_on_floor():
-		velocity += get_gravity() * delta
+	Global.debug.add_property("DoubleJumps",double_jumps, 3)
 	
 	#Resets your Double Jumps
 	if is_on_floor():
 		double_jumps = max_double_jump
-	
+
 	# Jumping or something
 	if Input.is_action_just_pressed("jump") and is_on_floor():
 		velocity.y = jump_velocity
@@ -84,6 +82,12 @@ func _physics_process(delta: float) -> void:
 		else:
 			velocity.y = jump_velocity
 			double_jumps -= 1
+	_headbob_effect(delta)
+
+func update_gravity(delta) -> void:
+	velocity += get_gravity() * delta
+
+func update_input(player_speed: float) -> void:
 	var input_dir := Input.get_vector("left", "right", "up", "down")
 	var direction = (head.transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
 	if direction:
@@ -92,7 +96,8 @@ func _physics_process(delta: float) -> void:
 	else:
 		velocity.x = move_toward(velocity.x, 0, player_speed)
 		velocity.z = move_toward(velocity.z, 0, player_speed)
-	_headbob_effect(delta)
+
+func update_velocity() -> void:
 	move_and_slide()
 
 #inputs, i think?
@@ -110,6 +115,7 @@ func _input(event: InputEvent) -> void:
 	if Input.is_action_just_pressed("pause"):
 		get_tree().quit()
 		#Pause()
+
 #Pause, completely pauses everything so you can go into options
 func Pause():
 	if get_tree().paused == false:

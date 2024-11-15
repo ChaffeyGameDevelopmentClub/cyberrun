@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://di552ovbiyxq0"]
+[gd_scene load_steps=11 format=3 uid="uid://di552ovbiyxq0"]
 
 [ext_resource type="Script" path="res://Scripts/Player/player.gd" id="1_oim34"]
 [ext_resource type="Script" path="res://Scripts/Player/reticle.gd" id="2_ls355"]
@@ -7,6 +7,7 @@
 [ext_resource type="Script" path="res://Scripts/States/state_machine.gd" id="5_e2wm6"]
 [ext_resource type="Script" path="res://Scripts/States/idle_player_state.gd" id="6_g4yvn"]
 [ext_resource type="Script" path="res://Scripts/States/walking_player_state.gd" id="7_65x6e"]
+[ext_resource type="Script" path="res://Scripts/States/sliding_player_state.gd" id="8_mxqsm"]
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_ri84d"]
 height = 3.0
@@ -99,3 +100,6 @@ script = ExtResource("6_g4yvn")
 
 [node name="WalkingPlayerState" type="Node" parent="PlayerStates"]
 script = ExtResource("7_65x6e")
+
+[node name="SlidingPlayerState" type="Node" parent="PlayerStates"]
+script = ExtResource("8_mxqsm")
