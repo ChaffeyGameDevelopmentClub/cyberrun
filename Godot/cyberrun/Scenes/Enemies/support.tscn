@@ -1,0 +1,18 @@
+[gd_scene load_steps=3 format=3 uid="uid://bs0ix5yqarjmh"]
+
+[ext_resource type="Script" path="res://Scenes/Enemies/support.gd" id="1_t0f0g"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_jn774"]
+
+[node name="Support" type="CharacterBody3D" node_paths=PackedStringArray("navAgent")]
+script = ExtResource("1_t0f0g")
+navAgent = NodePath("NavigationAgent3D")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("CapsuleShape3D_jn774")
+
+[node name="NavigationAgent3D" type="NavigationAgent3D" parent="."]
+
+[node name="Timers" type="Node" parent="."]
+
+[node name="testingTimer" type="Timer" parent="Timers"]
