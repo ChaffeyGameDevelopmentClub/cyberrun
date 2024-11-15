@@ -1,0 +1,43 @@
+[gd_scene load_steps=5 format=3 uid="uid://wydfltiy14rf"]
+
+[ext_resource type="Script" path="res://Scripts/Enemies/sniper.gd" id="1_7w6y7"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_acg0h"]
+margin = 0.0
+size = Vector3(5, 5, 5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_l7kfs"]
+size = Vector3(3, 3, 3)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_vtefo"]
+
+[node name="Sniper" type="CharacterBody3D" node_paths=PackedStringArray("charging_time", "gun", "ray")]
+script = ExtResource("1_7w6y7")
+charging_time = NodePath("Gun/charging time")
+gun = NodePath("Gun")
+ray = NodePath("Gun/RayCast3D")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("BoxShape3D_acg0h")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+mesh = SubResource("BoxMesh_l7kfs")
+
+[node name="Gun cooldown" type="Timer" parent="."]
+wait_time = 4.0
+one_shot = true
+
+[node name="Gun" type="Node3D" parent="."]
+
+[node name="RayCast3D" type="RayCast3D" parent="Gun"]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Gun"]
+transform = Transform3D(1, 0, 0, 0, 0.0121298, -0.999926, 0, 0.999926, 0.0121298, 0, -0.00703967, 2.50122)
+mesh = SubResource("CylinderMesh_vtefo")
+
+[node name="charging time" type="Timer" parent="Gun"]
+wait_time = 0.5
+one_shot = true
+
+[connection signal="timeout" from="Gun cooldown" to="." method="_on_gun_cooldown_timeout"]
+[connection signal="timeout" from="Gun/charging time" to="." method="_on_charging_time_timeout"]
