@@ -1,8 +1,10 @@
-[gd_scene load_steps=3 format=3 uid="uid://bvg8clwq15nq2"]
+[gd_scene load_steps=4 format=3 uid="uid://bvg8clwq15nq2"]
 
 [ext_resource type="Script" path="res://charger.gd" id="1_hggmr"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_j7qmn"]
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_7s0eq"]
 
 [node name="Charger" type="CharacterBody3D" node_paths=PackedStringArray("navAgent")]
 script = ExtResource("1_hggmr")
@@ -16,3 +18,15 @@ shape = SubResource("CapsuleShape3D_j7qmn")
 [node name="Node" type="Node" parent="."]
 
 [node name="Timer" type="Timer" parent="Node"]
+
+[node name="cool_down" type="Timer" parent="."]
+
+[node name="sight" type="Area3D" parent="."]
+
+[node name="sight collison" type="CollisionShape3D" parent="sight"]
+transform = Transform3D(15, 0, 0, 0, 15, 0, 0, 0, 15, 0, 0, 0)
+shape = SubResource("CylinderShape3D_7s0eq")
+
+[connection signal="timeout" from="cool_down" to="." method="_on_cool_down_timeout"]
+[connection signal="body_entered" from="sight" to="." method="_on_sight_body_entered"]
+[connection signal="body_exited" from="sight" to="." method="_on_sight_body_exited"]
