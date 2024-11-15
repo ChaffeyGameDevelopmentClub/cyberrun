@@ -1,8 +1,6 @@
-[gd_scene load_steps=4 format=3 uid="uid://d28wucg4ky710"]
+[gd_scene load_steps=3 format=3 uid="uid://c2rllaxxvk3n0"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_yvub0"]
-
-[sub_resource type="WorldBoundaryShape3D" id="WorldBoundaryShape3D_chnk5"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_hnyj6"]
 size = Vector3(10, 1, 10)
@@ -16,10 +14,6 @@ fov = 168.75
 [node name="StaticBody3D" type="StaticBody3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.18276, 3.8657, -0.377123)
 physics_material_override = SubResource("PhysicsMaterial_yvub0")
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2.80763, 0)
-shape = SubResource("WorldBoundaryShape3D_chnk5")
 
 [node name="Level" type="MeshInstance3D" parent="StaticBody3D"]
 transform = Transform3D(0.999689, 0, -0.0249207, 0, 1, 0, 0.0249207, 0, 0.999689, -0.407904, -3.29927, 2.93187)
