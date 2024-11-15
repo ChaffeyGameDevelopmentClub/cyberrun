@@ -1,0 +1,18 @@
+[gd_scene load_steps=3 format=3 uid="uid://bvg8clwq15nq2"]
+
+[ext_resource type="Script" path="res://charger.gd" id="1_hggmr"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_j7qmn"]
+
+[node name="Charger" type="CharacterBody3D" node_paths=PackedStringArray("navAgent")]
+script = ExtResource("1_hggmr")
+navAgent = NodePath("NavigationAgent3D")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("CapsuleShape3D_j7qmn")
+
+[node name="NavigationAgent3D" type="NavigationAgent3D" parent="."]
+
+[node name="Node" type="Node" parent="."]
+
+[node name="Timer" type="Timer" parent="Node"]
