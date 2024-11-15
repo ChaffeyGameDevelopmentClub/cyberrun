@@ -1,8 +1,9 @@
-[gd_scene load_steps=5 format=3 uid="uid://cfsbxjktnf4hi"]
+[gd_scene load_steps=6 format=3 uid="uid://dvvcqcudqqt0f"]
 
-[ext_resource type="Script" path="res://Scenes/Enemies/support.gd" id="1_t0f0g"]
+[ext_resource type="Script" path="res://Scripts/enemies/support.gd" id="1_t0f0g"]
 [ext_resource type="PackedScene" uid="uid://b6dopup0oon2i" path="res://Scripts/Components/health_component.tscn" id="2_5d7ey"]
 [ext_resource type="PackedScene" uid="uid://cmnmh2icsbogp" path="res://Scripts/Components/hitbox_component.tscn" id="3_0grm3"]
+[ext_resource type="Script" path="res://Scripts/Components/Scripts/weapon.gd" id="4_geu4e"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_jn774"]
 
@@ -21,7 +22,11 @@ shape = SubResource("CapsuleShape3D_jn774")
 
 [node name="HealthComponent" parent="." instance=ExtResource("2_5d7ey")]
 
-[node name="HitboxComponent" parent="." instance=ExtResource("3_0grm3")]
+[node name="HitboxComponent" parent="." node_paths=PackedStringArray("health_component") instance=ExtResource("3_0grm3")]
+health_component = NodePath("../HealthComponent")
 
 [node name="Hitbox Shape" type="CollisionShape3D" parent="HitboxComponent"]
 shape = SubResource("CapsuleShape3D_jn774")
+
+[node name="weapon" type="Node3D" parent="."]
+script = ExtResource("4_geu4e")

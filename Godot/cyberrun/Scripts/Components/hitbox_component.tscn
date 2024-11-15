@@ -1,7 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://cmnmh2icsbogp"]
 
-[ext_resource type="Script" path="res://Scenes/Enemies/hitbox_component.gd" id="1_1ktwi"]
+[ext_resource type="Script" path="res://Scripts/Components/Scripts/hitbox_component.gd" id="1_1ktwi"]
 
-[node name="HitboxComponent" type="Area3D" node_paths=PackedStringArray("health_component")]
+[node name="HitboxComponent" type="Area3D"]
 script = ExtResource("1_1ktwi")
-health_component = NodePath("")
