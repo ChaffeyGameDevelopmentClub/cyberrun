@@ -1,0 +1,18 @@
+[gd_scene load_steps=3 format=3 uid="uid://c5fxtyo581eh1"]
+
+[ext_resource type="Script" path="res://Scenes/Enemies/grunt.gd" id="1_37ugq"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_c6wf2"]
+
+[node name="Grunt" type="CharacterBody3D" node_paths=PackedStringArray("navAgent")]
+script = ExtResource("1_37ugq")
+navAgent = NodePath("NavigationAgent3D")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("CapsuleShape3D_c6wf2")
+
+[node name="NavigationAgent3D" type="NavigationAgent3D" parent="."]
+
+[node name="Timers" type="Node" parent="."]
+
+[node name="Rethink" type="Timer" parent="Timers"]
