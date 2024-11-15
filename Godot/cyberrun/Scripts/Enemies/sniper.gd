@@ -22,6 +22,7 @@ func _physics_process(delta: float) -> void:
 	if not charging: 
 		gun.look_at(player.global_transform.origin)
 #fire
+
 	if ray.get_collider() == player: 
 		charging= true
 		charging_time.start()
