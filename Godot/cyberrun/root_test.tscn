@@ -2,7 +2,8 @@
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_yvub0"]
 
-[sub_resource type="WorldBoundaryShape3D" id="WorldBoundaryShape3D_chnk5"]
+[sub_resource type="BoxShape3D" id="BoxShape3D_nvl1f"]
+size = Vector3(10, 1, 10)
 
 [sub_resource type="BoxMesh" id="BoxMesh_hnyj6"]
 size = Vector3(10, 1, 10)
@@ -10,16 +11,16 @@ size = Vector3(10, 1, 10)
 [node name="Floor" type="Node3D"]
 
 [node name="Camera3D" type="Camera3D" parent="."]
-transform = Transform3D(0.347476, 0, 0.937689, 0, 1, 0, -0.937689, 0, 0.347476, -4.80095, 7.92764, 59.4752)
-fov = 168.75
+transform = Transform3D(0.34809, 0.00889338, 0.937419, -0.935043, 0.0750657, 0.346495, -0.0672865, -0.997139, 0.0344453, -50.5128, 3.01247, -6.73952)
+fov = 135.0
 
 [node name="StaticBody3D" type="StaticBody3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.18276, 3.8657, -0.377123)
 physics_material_override = SubResource("PhysicsMaterial_yvub0")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2.80763, 0)
-shape = SubResource("WorldBoundaryShape3D_chnk5")
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.456181, -3.28782, 999.088)
+shape = SubResource("BoxShape3D_nvl1f")
 
 [node name="Level" type="MeshInstance3D" parent="StaticBody3D"]
 transform = Transform3D(0.999689, 0, -0.0249207, 0, 1, 0, 0.0249207, 0, 0.999689, -0.407904, -3.29927, 2.93187)
@@ -27,4 +28,4 @@ mesh = SubResource("BoxMesh_hnyj6")
 skeleton = NodePath("../..")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
-transform = Transform3D(0.84887, -0.152904, 0.506004, 0.177274, 0.984162, 0, -0.497989, 0.0897011, 0.862531, -0.988134, 4.32068, 3.51992)
+transform = Transform3D(-0.353579, -0.929949, -0.100881, 0.8059, -0.357601, 0.471855, -0.474876, 0.0855378, 0.875886, 1.32627, 9.17618, 3.00866)
