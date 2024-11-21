@@ -38,6 +38,14 @@ const headbob_move_amt = 0.06
 const headbob_freq = 2.4
 var headbob_time := 0.0
 
+enum PLAYER_STATE{
+	Idle,
+	Air,
+	Walking,
+	Slide
+}
+@export var player_state = PLAYER_STATE.Idle
+
 #pause menu or something idk
 @export var pause : Control
 
@@ -67,23 +75,22 @@ func _headbob_effect(delta):
 func _physics_process(delta: float) -> void:
 	Global.debug.add_property("MovementSpeed",player_speed, 1)
 	Global.debug.add_property("DoubleJumps",double_jumps, 3)
-	
 	#Resets your Double Jumps
 	if is_on_floor():
 		double_jumps = max_double_jump
-
-	# Jumping or something
-	if Input.is_action_just_pressed("jump") and is_on_floor():
-		velocity.y = jump_velocity
-	#please tell me theres another way to write this PLEASE
-	if Input.is_action_just_pressed("jump") and not is_on_floor() and canDJump:
-		if double_jumps <= 0:
-			pass
-		else:
-			velocity.y = jump_velocity
-			double_jumps -= 1
 	_headbob_effect(delta)
-
+	
+	match player_state:
+		0: #Idle
+			update_gravity(delta)
+			update_input(player_speed)
+			update_velocity()
+		1: #In the air
+			pass
+		2: #Walking
+			pass
+		3: #Sliding
+			pass
 func update_gravity(delta) -> void:
 	velocity += get_gravity() * delta
 
@@ -96,6 +103,16 @@ func update_input(player_speed: float) -> void:
 	else:
 		velocity.x = move_toward(velocity.x, 0, player_speed)
 		velocity.z = move_toward(velocity.z, 0, player_speed)
+	# Jumping or something
+	if Input.is_action_just_pressed("jump") and is_on_floor():
+		velocity.y = jump_velocity
+	#please tell me theres another way to write this PLEASE
+	if Input.is_action_just_pressed("jump") and not is_on_floor() and canDJump:
+		if double_jumps <= 0:
+			pass
+		else:
+			velocity.y = jump_velocity
+			double_jumps -= 1
 
 func update_velocity() -> void:
 	move_and_slide()

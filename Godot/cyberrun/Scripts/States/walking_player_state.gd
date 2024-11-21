@@ -13,7 +13,7 @@ func update(delta):
 	Global.player.update_velocity()
 
 	#if Input.is_action_just_pressed("slide") and Global.player.velocity.length() > 0.0:
-		#transition.emit("SlidingPlayerState")
+		#Global.player.camera
 
 	if Global.player.velocity.length() == 0.0:
 		transition.emit("IdlePlayerState")
