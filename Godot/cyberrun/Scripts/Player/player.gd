@@ -37,6 +37,7 @@ var double_jumps : int = 2
 const headbob_move_amt = 0.06
 const headbob_freq = 2.4
 var headbob_time := 0.0
+var newV
 
 enum PLAYER_STATE{
 	Idle,
@@ -73,27 +74,53 @@ func _headbob_effect(delta):
 	)
 
 func _physics_process(delta: float) -> void:
+	#Debug Menu
 	Global.debug.add_property("MovementSpeed",player_speed, 1)
-	Global.debug.add_property("DoubleJumps",double_jumps, 3)
-	#Resets your Double Jumps
+	Global.debug.add_property("VelocityX",velocity.x,2)
+	Global.debug.add_property("VelocityZ",velocity.z,3)
+	Global.debug.add_property("VelocityY",velocity.y,4)
+	Global.debug.add_property("CurrentState",player_state, 5)
+	Global.debug.add_property("DoubleJumps",double_jumps, 6)
+	
+	_headbob_effect(delta)
 	if is_on_floor():
 		double_jumps = max_double_jump
-	_headbob_effect(delta)
-	
-	match player_state:
+	if not is_on_floor():
+		player_state = 1
+	match player_state: #Player states, this looks so dirty im kaying my essing self
 		0: #Idle
 			update_gravity(delta)
 			update_input(player_speed)
 			update_velocity()
+			if velocity != Vector3(0,0,0):
+				player_state = 2
 		1: #In the air
-			pass
+			update_gravity(delta)
+			update_input(player_speed)
+			update_velocity()
+			if is_on_floor():
+				player_state = 0
 		2: #Walking
-			pass
+			update_gravity(delta)
+			update_input(player_speed)
+			update_velocity()
+			if velocity == Vector3(0,0,0):
+				player_state = 0
+			if Input.is_action_just_pressed("slide"):
+				player_state = 3
+				newV = velocity * 1.5
 		3: #Sliding
-			pass
+			update_gravity(delta)
+			update_velocity()
+			velocity = lerp(velocity, newV, 0.2)
+			if Input.is_action_just_released("slide"):
+				player_state = 0
+				newV = 0
+#Functions that make the game work
 func update_gravity(delta) -> void:
 	velocity += get_gravity() * delta
 
+#Movement
 func update_input(player_speed: float) -> void:
 	var input_dir := Input.get_vector("left", "right", "up", "down")
 	var direction = (head.transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
@@ -103,32 +130,24 @@ func update_input(player_speed: float) -> void:
 	else:
 		velocity.x = move_toward(velocity.x, 0, player_speed)
 		velocity.z = move_toward(velocity.z, 0, player_speed)
-	# Jumping or something
-	if Input.is_action_just_pressed("jump") and is_on_floor():
-		velocity.y = jump_velocity
-	#please tell me theres another way to write this PLEASE
-	if Input.is_action_just_pressed("jump") and not is_on_floor() and canDJump:
-		if double_jumps <= 0:
-			pass
-		else:
-			velocity.y = jump_velocity
-			double_jumps -= 1
 
 func update_velocity() -> void:
 	move_and_slide()
 
-#inputs, i think?
+#Could put inputs that can't be disabled like shooting, pause, stuff like that
 func _input(event: InputEvent) -> void:
-	#walking sound DELETE ASAP
-	if velocity.x!=0 and velocity.z!=0 and isSound != true and is_on_floor():
-		#Sound stuff, add in later
-		#isSound = true
-		#Walk.play()
-		#await(Walk.finished)
-		#isSound=false
-		pass
-	pass
-	#these functions will handle pause for now but I THINK this is the neatest it can look rn
+	# Jumping or something
+	if Input.is_action_just_pressed("jump") and is_on_floor():
+		velocity.y = jump_velocity
+	if Input.is_action_just_pressed("jump") and not is_on_floor() and canDJump:
+		if double_jumps <= 0:
+			pass
+		#if is_on_wall():
+		
+		#else:
+			velocity.y = jump_velocity
+			double_jumps -= 1
+	#Do later
 	if Input.is_action_just_pressed("pause"):
 		get_tree().quit()
 		#Pause()

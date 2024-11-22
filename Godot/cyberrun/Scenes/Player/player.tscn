@@ -1,12 +1,9 @@
-[gd_scene load_steps=10 format=3 uid="uid://di552ovbiyxq0"]
+[gd_scene load_steps=7 format=3 uid="uid://di552ovbiyxq0"]
 
 [ext_resource type="Script" path="res://Scripts/Player/player.gd" id="1_oim34"]
 [ext_resource type="Script" path="res://Scripts/Player/reticle.gd" id="2_ls355"]
 [ext_resource type="Theme" uid="uid://bfpfb86hf817k" path="res://Scenes/Menus/UI Themes/Debug_Panel_Theme.tres" id="3_syqpq"]
 [ext_resource type="Script" path="res://Scripts/Player/debug_panel.gd" id="4_p7xg7"]
-[ext_resource type="Script" path="res://Scripts/States/state_machine.gd" id="5_e2wm6"]
-[ext_resource type="Script" path="res://Scripts/States/idle_player_state.gd" id="6_g4yvn"]
-[ext_resource type="Script" path="res://Scripts/States/walking_player_state.gd" id="7_65x6e"]
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_ri84d"]
 height = 3.0
@@ -89,13 +86,3 @@ layout_mode = 2
 
 [node name="VBoxContainer" type="VBoxContainer" parent="UI/DebugPanel/MarginContainer"]
 layout_mode = 2
-
-[node name="PlayerStates" type="Node" parent="." node_paths=PackedStringArray("current_state")]
-script = ExtResource("5_e2wm6")
-current_state = NodePath("IdlePlayerState")
-
-[node name="IdlePlayerState" type="Node" parent="PlayerStates"]
-script = ExtResource("6_g4yvn")
-
-[node name="WalkingPlayerState" type="Node" parent="PlayerStates"]
-script = ExtResource("7_65x6e")
