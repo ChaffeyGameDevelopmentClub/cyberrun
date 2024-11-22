@@ -10,10 +10,11 @@ height = 3.0
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_n8h3h"]
 
-[node name="Player" type="CharacterBody3D" node_paths=PackedStringArray("head", "camera")]
+[node name="Player" type="CharacterBody3D" node_paths=PackedStringArray("head", "camera", "wallJumpRay")]
 script = ExtResource("1_oim34")
 head = NodePath("Head")
 camera = NodePath("Head/Camera3D")
+wallJumpRay = NodePath("Head/WallJumpRay")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 transform = Transform3D(0.200503, 0, 0, 0, 0.200503, 0, 0, 0, 0.200503, 0, 0.3, 0)
@@ -27,6 +28,9 @@ shape = SubResource("CapsuleShape3D_n8h3h")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.463415, 0)
 
 [node name="Camera3D" type="Camera3D" parent="Head"]
+
+[node name="WallJumpRay" type="RayCast3D" parent="Head"]
+transform = Transform3D(0.25, 0, 0, 0, -1.09278e-08, -0.25, 0, 0.25, -1.09278e-08, 0, 0, 0)
 
 [node name="UI" type="Control" parent="."]
 layout_mode = 3
