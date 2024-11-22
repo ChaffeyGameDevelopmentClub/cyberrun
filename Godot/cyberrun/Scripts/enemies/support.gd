@@ -17,6 +17,7 @@ var vulnerable : bool
 var deployed : bool
 #arrays
 var friendlys 
+var disToFriend : Array
 
 enum ENTITY_STATE{
 	Idle,
@@ -33,6 +34,11 @@ func _ready() -> void:
 	friendlys = get_parent().get_children()
 	#print(friendlys[1].name)
 func _physics_process(delta: float) -> void:
+	#puts distances in a array
+	for i in friendlys.size():
+		disToFriend.push_back(getDistance(self.position,friendlys[i].position))
+		#print(self.name+" "+friendlys[i].name+" "+str(disToFriend[i]))
+		i+=1
 	
 	match entity_state:
 		
@@ -42,15 +48,30 @@ func _physics_process(delta: float) -> void:
 		1:#Wander
 			#wander within a range till fight starts
 			var randPos = setRandomPos()
-			setTarget(randPos)
 			if navAgent.distance_to_target() <= 2:
 				entity_state = 0
 			else: 
-				moveTo()
+				moveTo(randPos)
 		2:#Follow
 			#Follow team till num amount is met, if >=3 switch deploy
 			#how to follow buddies?
 			#make grunts group up when near support to assits the deploy function
+			#Check if near 3
+			var a
+			var near : Array
+			var target
+			for i in friendlys.size():
+				if disToFriend[i] <= 5:
+					a=+1
+					near.push_back(friendlys[i])
+				var nearest = near.min()
+				for o in friendlys.size():
+					if nearest == disToFriend[o]:
+						target = friendlys[o]
+				if !target == 'null':
+					moveTo(target)
+				if a >= 3:
+					entity_state = 3
 			pass
 		3:#Deploy
 			#idea is to deploy shield when around Num of enimies, and undeploy if num < amount needed
@@ -96,11 +117,9 @@ func _physics_process(delta: float) -> void:
 func get_player_pos():
 	var playerPos = player.transform.origin
 	return playerPos
-	
-func setTarget(target):
-	navAgent.set_target_position(target)
 
-func moveTo():
+func moveTo(target):
+	navAgent.set_target_position(target)
 	var next_nav_point = navAgent.get_next_path_position()
 	var Newvelocity = (next_nav_point - global_transform.origin).normalized() * SPEED
 	set_velocity(Newvelocity)
@@ -108,3 +127,11 @@ func moveTo():
 func setRandomPos():
 	var pos = Vector3(randi_range(self.position.x-10,self.position.x+10),0,randi_range(self.position.z-10,self.position.z+10))
 	return pos
+
+func getDistance(target1,target2):
+	var dis : float = pow(target2.x-target1.x,2)+pow(target2.z-target1.z,2)
+	dis = pow(dis,1.0/2.0)
+	#print(target1)
+	#print(target2)
+	#print(dis)
+	return dis
