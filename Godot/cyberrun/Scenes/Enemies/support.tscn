@@ -30,3 +30,5 @@ shape = SubResource("CapsuleShape3D_jn774")
 
 [node name="weapon" type="Node3D" parent="."]
 script = ExtResource("4_geu4e")
+
+[connection signal="area_entered" from="HitboxComponent" to="weapon" method="_on_hitbox_component_area_entered"]
