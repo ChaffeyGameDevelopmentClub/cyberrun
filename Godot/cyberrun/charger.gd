@@ -1,6 +1,5 @@
 extends CharacterBody3D
 
-
 const SPEED = 5.0
 const JUMP_VELOCITY = 4.5
 @export var navAgent: NavigationAgent3D
@@ -11,7 +10,6 @@ var inAir : bool
 var vulnerable : bool
 var sight : bool
 var charging : bool
-
 
 
 enum ENTITY_STATE{
@@ -33,10 +31,16 @@ func _physics_process(delta: float) -> void:
 			pass
 		1: #wondering 
 			#walk around while waiting 
+			var randPos = setRandomPos()
+			setTarget(randPos) 
+			moveTo()
 			pass
 		2:#attack
+			
 			#Charge at player 
 			look_at(player.transform.origin)
+			setTarget(player.transform.origin)
+			
 			pass 
 		3:#cooldown
 			#start right after attack 
@@ -68,14 +72,24 @@ func _physics_process(delta: float) -> void:
 	# As good practice, you should replace UI actions with custom gameplay actions.
 	
 
-
 	else:
 		velocity.x = move_toward(velocity.x, 0, SPEED)
 		velocity.z = move_toward(velocity.z, 0, SPEED)
 
 	move_and_slide()
-
-
+#function
+func setTarget(target):
+	navAgent.set_target_position(target)
+func get_player_pos():
+	var playerPos=player.transform.origin
+	return playerPos
+func moveTo():
+	var next_nav_point=navAgent.get_next_path_position()
+	var Newvelocity=(next_nav_point-global_transform.origin).normalized()* SPEED
+	set_velocity(Newvelocity)
+func setRandomPos():
+		var pos= Vector3(randi_range(self.position.x-10,self.position.x+10),0,randi_range(self.position.z-10.,self.position.z+10))
+		return pos
 func _on_cool_down_timeout() -> void:
 	pass # Replace with function body.
 
@@ -93,3 +107,4 @@ func _on_sight_body_exited(body: Node3D) -> void:
 
 func _on_stagger_timeout() -> void:
 	entity_state = 0 # Replace with function body.
+	
