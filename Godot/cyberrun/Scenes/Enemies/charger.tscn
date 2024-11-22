@@ -31,6 +31,8 @@ one_shot = true
 transform = Transform3D(15, 0, 0, 0, 15, 0, 0, 0, 15, 0, 0, 0)
 shape = SubResource("CylinderShape3D_7s0eq")
 
+[node name="wait_timer" type="Timer" parent="."]
+
 [connection signal="timeout" from="Node/stagger" to="." method="_on_stagger_timeout"]
 [connection signal="timeout" from="cool_down" to="." method="_on_cool_down_timeout"]
 [connection signal="body_entered" from="sight" to="." method="_on_sight_body_entered"]
