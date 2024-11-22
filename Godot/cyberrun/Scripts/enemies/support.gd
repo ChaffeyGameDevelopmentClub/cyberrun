@@ -32,7 +32,6 @@ func _ready() -> void:
 	#how to get friends
 	#Array
 	friendlys = get_parent().get_children()
-	#print(friendlys[1].name)
 func _physics_process(delta: float) -> void:
 	#puts distances in a array
 	for i in friendlys.size():
