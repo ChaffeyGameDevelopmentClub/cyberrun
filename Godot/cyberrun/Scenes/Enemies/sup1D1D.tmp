@@ -1,0 +1,37 @@
+[gd_scene load_steps=6 format=3 uid="uid://dvvcqcudqqt0f"]
+
+[ext_resource type="Script" path="res://Scripts/enemies/support.gd" id="1_t0f0g"]
+[ext_resource type="PackedScene" uid="uid://b6dopup0oon2i" path="res://Scripts/Components/health_component.tscn" id="2_5d7ey"]
+[ext_resource type="PackedScene" uid="uid://cmnmh2icsbogp" path="res://Scripts/Components/hitbox_component.tscn" id="3_0grm3"]
+[ext_resource type="Script" path="res://Scripts/Components/Scripts/weapon.gd" id="4_geu4e"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_jn774"]
+
+[node name="Support" type="CharacterBody3D" node_paths=PackedStringArray("navAgent")]
+script = ExtResource("1_t0f0g")
+navAgent = NodePath("NavigationAgent3D")
+
+[node name="Collision" type="CollisionShape3D" parent="."]
+shape = SubResource("CapsuleShape3D_jn774")
+
+[node name="NavigationAgent3D" type="NavigationAgent3D" parent="."]
+
+[node name="Timers" type="Node" parent="."]
+
+[node name="testingTimer" type="Timer" parent="Timers"]
+
+[node name="HealthComponent" parent="." instance=ExtResource("2_5d7ey")]
+visible = false
+
+[node name="HitboxComponent" parent="." node_paths=PackedStringArray("health_component") instance=ExtResource("3_0grm3")]
+visible = false
+health_component = NodePath("../HealthComponent")
+
+[node name="Hitbox Shape" type="CollisionShape3D" parent="HitboxComponent"]
+shape = SubResource("CapsuleShape3D_jn774")
+
+[node name="weapon" type="Node3D" parent="."]
+visible = false
+script = ExtResource("4_geu4e")
+
+[connection signal="area_entered" from="HitboxComponent" to="weapon" method="_on_hitbox_component_area_entered"]

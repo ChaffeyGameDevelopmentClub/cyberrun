@@ -28,7 +28,9 @@ folder_colors={
 "res://Scenes/Enemies/": "purple",
 "res://Scenes/Player/": "pink",
 "res://Scripts/": "yellow",
-"res://Scripts/Player/": "pink"
+"res://Scripts/Components/": "green",
+"res://Scripts/Player/": "pink",
+"res://Scripts/enemies/": "red"
 }
 
 [input]
