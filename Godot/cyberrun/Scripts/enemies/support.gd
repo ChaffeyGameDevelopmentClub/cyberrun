@@ -34,7 +34,12 @@ func _physics_process(delta: float) -> void:
 			pass
 		1:#Wander
 			#wander within a range till fight starts
-			pass
+			var randPos = setRandomPos()
+			setTarget(randPos)
+			if navAgent.distance_to_target() <= 2:
+				entity_state = 0
+			else: 
+				moveTo()
 		2:#Follow
 			#Follow team till num amount is met
 			#how to follow buddies?
@@ -79,3 +84,15 @@ func _physics_process(delta: float) -> void:
 func get_player_pos():
 	var playerPos = player.transform.origin
 	return playerPos
+	
+func setTarget(target):
+	navAgent.set_target_position(target)
+
+func moveTo():
+	var next_nav_point = navAgent.get_next_path_position()
+	var Newvelocity = (next_nav_point - global_transform.origin).normalized() * SPEED
+	set_velocity(Newvelocity)
+
+func setRandomPos():
+	var pos = Vector3(randi_range(self.position.x-10,self.position.x+10),0,randi_range(self.position.z-10,self.position.z+10))
+	return pos
