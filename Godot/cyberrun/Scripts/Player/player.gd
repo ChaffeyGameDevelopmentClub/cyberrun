@@ -45,6 +45,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			neck.rotate_y(-event.relative.x*sensitivity_camera)
 			camera.rotate_x(-event.relative.y*sensitivity_camera)
 			camera.rotation.x = clamp(camera.rotation.x, deg_to_rad(-80), deg_to_rad(70))
+		
 
 	if get_tree().paused==true:
 		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
@@ -72,11 +73,17 @@ func _physics_process(delta: float) -> void:
 			double_jumps -= 1
 			print("fent left: ")
 			print(double_jumps)
+			
+	if get_tree().paused == false:
+		var joypadDirection = Input.get_vector("cameraLeft", "cameraRight", "cameraUp", "cameraDown")
+		camera.rotate_x(-joypadDirection.y * sensitivity_camera * 50)
+		neck.rotate_y(-joypadDirection.x * sensitivity_camera * 50)
+		camera.rotation.x = clamp(camera.rotation.x, deg_to_rad(-80), deg_to_rad(70))
 
 	# Get the input direction and handle the movement/deceleration.
 	# As good practice, you should replace UI actions with custom gameplay actions.
 	var input_dir := Input.get_vector("left", "right", "up", "down")
-	var direction = (neck.transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
+	var direction = (neck.transform.basis * Vector3(input_dir.x, 0, input_dir.y))#.normalized()
 	if direction:
 		#Plays the head bobbing animation while a direction is being played, it should be easy to
 		#edit within the animation tab so LOL
