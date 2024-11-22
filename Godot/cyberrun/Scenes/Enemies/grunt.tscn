@@ -1,8 +1,14 @@
-[gd_scene load_steps=3 format=3 uid="uid://c5fxtyo581eh1"]
+[gd_scene load_steps=5 format=3 uid="uid://c5fxtyo581eh1"]
 
 [ext_resource type="Script" path="res://Scenes/Enemies/grunt.gd" id="1_37ugq"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_c6wf2"]
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_yhv0b"]
+height = 2.98
+radius = 7.63
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_p437y"]
 
 [node name="Grunt" type="CharacterBody3D" node_paths=PackedStringArray("navAgent")]
 script = ExtResource("1_37ugq")
@@ -16,3 +22,16 @@ shape = SubResource("CapsuleShape3D_c6wf2")
 [node name="Timers" type="Node" parent="."]
 
 [node name="Rethink" type="Timer" parent="Timers"]
+
+[node name="Sight" type="Area3D" parent="."]
+
+[node name="CollisionSight" type="CollisionShape3D" parent="Sight"]
+shape = SubResource("CylinderShape3D_yhv0b")
+
+[node name="Melee range" type="Area3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Melee range"]
+shape = SubResource("CylinderShape3D_p437y")
+
+[connection signal="body_entered" from="Sight" to="." method="_on_sight_body_entered"]
+[connection signal="body_exited" from="Sight" to="." method="_on_sight_body_exited"]
