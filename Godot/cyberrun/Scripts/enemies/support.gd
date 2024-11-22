@@ -15,6 +15,8 @@ var canShoot : bool
 var vulnerable : bool
 #States
 var deployed : bool
+#arrays
+var friendlys 
 
 enum ENTITY_STATE{
 	Idle,
@@ -25,6 +27,11 @@ enum ENTITY_STATE{
 }
 @export var entity_state = ENTITY_STATE.Idle
 
+func _ready() -> void:
+	#how to get friends
+	#Array
+	friendlys = get_parent().get_children()
+	#print(friendlys[1].name)
 func _physics_process(delta: float) -> void:
 	
 	match entity_state:
@@ -41,12 +48,17 @@ func _physics_process(delta: float) -> void:
 			else: 
 				moveTo()
 		2:#Follow
-			#Follow team till num amount is met
+			#Follow team till num amount is met, if >=3 switch deploy
 			#how to follow buddies?
+			#make grunts group up when near support to assits the deploy function
 			pass
 		3:#Deploy
 			#idea is to deploy shield when around Num of enimies, and undeploy if num < amount needed
-			pass
+			if friendlys.lengeth >= 3:
+				#Deploy Shield and aoe
+				#get list of friendlys as a array of nodes and apply visual and number effects
+				#Raise shield from ground using lerp and rotation, to keep out of sight use hide/show.
+				pass
 		
 		4:#Air
 			if not is_on_floor():
@@ -69,7 +81,7 @@ func _physics_process(delta: float) -> void:
 	if Input.is_action_just_pressed("ui_accept") and is_on_floor():
 		velocity.y = JUMP_VELOCITY
 
-	var input_dir
+	var input_dir := Vector2(0,0)
 	var direction := (transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
 	if direction:
 		velocity.x = direction.x * SPEED
