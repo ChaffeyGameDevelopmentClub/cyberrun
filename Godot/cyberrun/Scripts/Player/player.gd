@@ -87,6 +87,7 @@ func _physics_process(delta: float) -> void:
 		double_jumps = max_double_jump
 	if not is_on_floor():
 		player_state = 1
+		
 	match player_state: #Player states, this looks so dirty im kaying my essing self
 		0: #Idle
 			update_gravity(delta)
@@ -109,6 +110,7 @@ func _physics_process(delta: float) -> void:
 			if Input.is_action_just_pressed("slide"):
 				player_state = 3
 				newV = velocity * 1.5
+				
 		3: #Sliding
 			update_gravity(delta)
 			update_velocity()
