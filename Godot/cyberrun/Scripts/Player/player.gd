@@ -140,7 +140,7 @@ func update_velocity() -> void:
 	move_and_slide()
 
 #Could put inputs that can't be disabled like shooting, pause, stuff like that
-func _input(event: InputEvent) -> void:
+func _input(_event: InputEvent) -> void:
 	# Jumping or something
 	if Input.is_action_just_pressed("jump") and is_on_floor():
 		velocity.y = jump_velocity

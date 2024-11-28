@@ -13,7 +13,7 @@ extends CenterContainer
 func _ready() -> void:
 	queue_redraw()
 
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	adjust_reticle_lines()
 
 func _draw():

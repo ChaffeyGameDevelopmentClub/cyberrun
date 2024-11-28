@@ -1,13 +1,17 @@
 extends CharacterBody3D
 
 
-const SPEED = 5.0
+const SPEED = 2.0
 const JUMP_VELOCITY = 4.5
 #onready vars, Mostly timers
-@onready var timer : Timer = $Timers/testingTimer
+@onready var stuckTimer : Timer = $Timers/StuckTimer
+@onready var wanderTimer : Timer = $Timers/WanderTimer
 #export vars
 @export var navAgent : NavigationAgent3D
 @export var player : CharacterBody3D
+
+var rng
+var randPos
 
 #Status
 var inAir : bool
@@ -26,9 +30,10 @@ enum ENTITY_STATE{
 	Deploy,
 	Air,
 }
-@export var entity_state = ENTITY_STATE.Idle
+@export var entity_state := ENTITY_STATE.Idle
 
 func _ready() -> void:
+	rng = RandomNumberGenerator.new()
 	#how to get friends
 	#Array
 	friendlys = get_parent().get_children()
@@ -43,14 +48,23 @@ func _physics_process(delta: float) -> void:
 		
 		0:#idle
 			#thinking phase, meant to decide which pase or just idle
-			pass
+			if true:
+				randPos = setRandomPos()
+				#print(randPos)
+				entity_state = 1
 		1:#Wander
 			#wander within a range till fight starts
-			var randPos = setRandomPos()
-			if navAgent.distance_to_target() <= 2:
-				entity_state = 0
+			
+			if navAgent.distance_to_target() <= 1 and wanderTimer.is_stopped():
+				#timer
+				wanderTimer.start()
+				print("TimerStarted")
+				velocity = Vector3(0,0,0)
 			else: 
 				moveTo(randPos)
+				print(self.name +" "+str(randPos))
+				if stuckTimer.is_stopped():
+					stuckTimer.start()
 		2:#Follow
 			#Follow team till num amount is met, if >=3 switch deploy
 			#how to follow buddies?
@@ -97,18 +111,15 @@ func _physics_process(delta: float) -> void:
 	# Add the gravity.
 	if not is_on_floor():
 		velocity += get_gravity() * delta
-	# Handle jump. dunno if i can make this work, we will see.
-	if Input.is_action_just_pressed("ui_accept") and is_on_floor():
-		velocity.y = JUMP_VELOCITY
-
-	var input_dir := Vector2(0,0)
-	var direction := (transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
-	if direction:
-		velocity.x = direction.x * SPEED
-		velocity.z = direction.z * SPEED
-	else:
-		velocity.x = move_toward(velocity.x, 0, (SPEED/2))
-		velocity.z = move_toward(velocity.z, 0, (SPEED/2))
+	
+	#var input_dir := Vector2(0,0)
+	#var direction := (transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
+	#if direction:
+	#	velocity.x = direction.x * SPEED
+	#	velocity.z = direction.z * SPEED
+	#else:
+	#	velocity.x = move_toward(velocity.x, 0, (SPEED/2))
+	#	velocity.z = move_toward(velocity.z, 0, (SPEED/2))
 
 	move_and_slide()
 
@@ -124,7 +135,7 @@ func moveTo(target):
 	set_velocity(Newvelocity)
 
 func setRandomPos():
-	var pos = Vector3(randi_range(self.position.x-10,self.position.x+10),0,randi_range(self.position.z-10,self.position.z+10))
+	var pos = Vector3(rng.randi_range(self.position.x-5,self.position.x+5),0,rng.randi_range(self.position.z-5,self.position.z+5))
 	return pos
 
 func getDistance(target1,target2):
@@ -134,3 +145,17 @@ func getDistance(target1,target2):
 	#print(target2)
 	#print(dis)
 	return dis
+	
+
+
+
+func _on_wander_timer_timeout() -> void:
+	entity_state = 0
+	velocity = Vector3(0,0,0)
+	#print("Timeout")
+
+func _on_stuck_timer_timeout() -> void:
+	print("timeout")
+	velocity = Vector3(0,0,0)
+	rng = RandomNumberGenerator.new()
+	entity_state = 0

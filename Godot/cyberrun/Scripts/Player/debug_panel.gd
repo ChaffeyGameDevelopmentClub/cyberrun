@@ -10,7 +10,7 @@ func _ready() -> void:
 	#erm... i guess later
 	#add_debug_property("FPS", FPS)
 
-func _process(delta):
+func _process(_delta):
 	#if visible:
 		#frames_per_second = "%.2f" % (1.0/delta)
 	pass
