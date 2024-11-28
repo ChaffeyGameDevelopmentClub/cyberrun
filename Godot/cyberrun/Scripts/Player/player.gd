@@ -1,140 +1,174 @@
-extends CharacterBody3D
-#pause my menu idiot
-@export var PauseMenu: Control
-var paused = false
+class_name Player extends CharacterBody3D
 
 #dont tell them this but i stole everything from backwaters
+#also dont tell them but im using this as my checklist hahahahahahahahaha
+#TODO:
+#Dashing, kinda like a teleport, ask luna later lmao
+#General UI
+#add in acceleration a bit, start at lower velocity, timer goes off and velocity ups
+#going into idle resets timer
 
-#SFX
-#@export var Walk: AudioStreamPlayer
-#@export var Run: AudioStreamPlayer
-#Jumping
-const JUMP_VELOCITY = 4.5
-var max_double_jump : int = 3
-var double_jumps : int = 3
+#Jumping :3
+const jump_velocity = 4.5
+var max_double_jump : int = 2
+var double_jumps : int = 2
+var wall_jumps : int = 3
+var max_wall_jumps : int = 3
+#Toggles for your actions, just so that its not a pain in the ass later
+@export var canDJump = true
+@export var canDash = true
+@export var canSlide = true
 #Speed and camera sensitivity vars
 @export var sensitivity_camera = .001
-@export var player_speed = 2.5
-@export var neck : Node3D
+@export var player_speed = 6
+@export var head : Node3D
 @export var camera : Camera3D
-#Stamina System, tweak later
-@export var stamina = 100
-@export var max_stamina = 200
-@export var isSprint = false
-@export var isTired = false
-@export var isSound = false
-#Camera effects color might not be used im sorry :(
-@export var camera_color = 0
+#Walljump
+@export var wallJumpRay = RayCast3D
+#Headbob, it affects where you aim so like.... maybe not too much unless im goated and figure out how to seperate the two
+const headbob_move_amt = 0.04
+const headbob_freq = 2.4
+var headbob_time := 0.0
+var newV
+
+#State array
+enum PLAYER_STATE{
+	Idle,
+	Air,
+	Walking,
+	Slide
+}
+@export var player_state = PLAYER_STATE.Idle
 
 #pause menu or something idk
 @export var pause : Control
-#Animation vars including another fucking boolean because it will play over itself
-@export var headBobbing : AnimationPlayer
-var isAnimating = false
+var paused = false
 
 func _ready() -> void:
-	pass
+	Global.player = self
 
 func _unhandled_input(event: InputEvent) -> void:
-	#clamps values, for some reason it works better here so lets call it magic
-	stamina = clamp(stamina,0,max_stamina)
-
 	if get_tree().paused==false:
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 		if event is InputEventMouseMotion:
-			neck.rotate_y(-event.relative.x*sensitivity_camera)
+			head.rotate_y(-event.relative.x*sensitivity_camera)
 			camera.rotate_x(-event.relative.y*sensitivity_camera)
 			camera.rotation.x = clamp(camera.rotation.x, deg_to_rad(-80), deg_to_rad(70))
-
 	if get_tree().paused==true:
 		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 		pass
 
-#literally the everything function
-func _physics_process(delta: float) -> void:
-	# Add the gravity.
-	if not is_on_floor():
-		velocity += get_gravity() * delta
+#Actually does the headbobbing, stolen btw
+func _headbob_effect(delta):
+	headbob_time += delta * self.velocity.length()
+	camera.transform.origin = Vector3(
+		cos(headbob_time * headbob_freq * 0.5) * headbob_move_amt,
+		cos(headbob_time * headbob_freq) * headbob_move_amt,
+		0
+	)
 
-	#Resets your Double Jumps
+func _physics_process(delta: float) -> void:
+	#Debug Menu
+	Global.debug.add_property("MovementSpeed",player_speed, 1)
+	Global.debug.add_property("VelocityX",velocity.x,2)
+	Global.debug.add_property("VelocityZ",velocity.z,3)
+	Global.debug.add_property("VelocityY",velocity.y,4)
+	Global.debug.add_property("CurrentState",player_state, 5)
+	Global.debug.add_property("DoubleJumps",double_jumps, 6)
+	Global.debug.add_property("WallJumps",wall_jumps, 7)
+	
 	if is_on_floor():
 		double_jumps = max_double_jump
+		wall_jumps = max_wall_jumps
+	if not is_on_floor():
+		player_state = 1
+	
+	#Condense the update functions
+	match player_state: #Player states
+		0: #Idle
+			update_gravity(delta)
+			update_input(player_speed)
+			update_velocity()
+			if velocity != Vector3(0,0,0):
+				player_state = 2
+		1: #In the air
+			update_gravity(delta)
+			update_input(player_speed)
+			update_velocity()
+			if is_on_floor():
+				player_state = 0
+			#Buggy, figure out how to make it not conflict with wall jumping
+			#if Input.is_action_pressed("left") and is_on_wall() and !Input.is_action_just_pressed("jump"):
+				#velocity.y = -1
+			#if Input.is_action_pressed("right") and is_on_wall() and !Input.is_action_just_pressed("jump"):
+				#velocity.y = -1
+		2: #Walking
+			update_gravity(delta)
+			update_input(player_speed)
+			update_velocity()
+			_headbob_effect(delta)
+			if velocity == Vector3(0,0,0):
+				player_state = 0
+			if Input.is_action_just_pressed("slide") and canSlide == true:
+				player_state = 3
+				newV = velocity * 1.5
+				
+		3: #Sliding
+			update_gravity(delta)
+			update_velocity()
+			velocity = lerp(velocity, newV, 0.2)
+			if Input.is_action_just_released("slide"):
+				player_state = 0
+				newV = 0
+#Functions that make the game work
+func update_gravity(delta) -> void:
+	velocity += get_gravity() * delta
 
-	# Jumping or something
-	if Input.is_action_just_pressed("jump") and is_on_floor():
-		velocity.y = JUMP_VELOCITY
-	if Input.is_action_just_pressed("jump") and not is_on_floor():
-		if double_jumps <= 0:
-			#haha no jumping for you
-			pass
-		else:
-			velocity.y += JUMP_VELOCITY
-			double_jumps -= 1
-			print("fent left: ")
-			print(double_jumps)
-
-	# Get the input direction and handle the movement/deceleration.
-	# As good practice, you should replace UI actions with custom gameplay actions.
+#Movement
+func update_input(player_speed: float) -> void:
 	var input_dir := Input.get_vector("left", "right", "up", "down")
-	var direction = (neck.transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
+	var direction = (head.transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
 	if direction:
-		#Plays the head bobbing animation while a direction is being played, it should be easy to
-		#edit within the animation tab so LOL
-		#Do Later
-		#if isSprint ==false:
-			#if isAnimating == false:
-				#isAnimating = true
-				#headBobbing.play("player_walk_headbob")
-				#await(headBobbing.animation_finished)
-				#isAnimating =false
-		#if isSprint == true:
-			#if isAnimating == false:
-				#isAnimating = true
-				#headBobbing.play("player_run_headbob")
-				#await(headBobbing.animation_finished)
-				#isAnimating =false
 		velocity.x = direction.x * player_speed
 		velocity.z = direction.z * player_speed
+		wallJumpRay.target_position = direction
 	else:
 		velocity.x = move_toward(velocity.x, 0, player_speed)
 		velocity.z = move_toward(velocity.z, 0, player_speed)
-	#Sprint
-	if direction and isSprint==true and isTired!=true:
-		stamina -= 2
-	else:
-		if stamina < 200:
-			stamina +=1
-	if stamina <10:
-		isTired=true
-	elif stamina>180:
-		isTired=false
+
+func update_velocity() -> void:
 	move_and_slide()
 
-#input testing but we need to get rid of test inputs in the final build
+#Could put inputs that can't be disabled like shooting, pause, stuff like that
 func _input(event: InputEvent) -> void:
-	#Sprint
-	if Input.is_action_pressed("sprint") and isTired==false:
-		player_speed = 6
-		isSprint=true
-	elif isTired==true: 
-		player_speed = 2.5
-		isSprint=false
-	if Input.is_action_just_released("sprint"):
-		isSprint = false
-		player_speed = 2.5
-		pass
-	#walking sound DELETE ASAP
-	if velocity.x!=0 and velocity.z!=0 and isSound != true and is_on_floor():
-		#Sound stuff, add in later
-		#isSound = true
-		#Walk.play()
-		#await(Walk.finished)
-		#isSound=false
-		pass
-	pass
-	#these functions will handle pause for now but I THINK this is the neatest it can look rn
+	# Jumping or something
+	if Input.is_action_just_pressed("jump") and is_on_floor():
+		velocity.y = jump_velocity
+	if Input.is_action_just_pressed("jump") and not is_on_floor():
+		if is_on_wall():
+			if wall_jumps <= 0:
+				pass
+			else:
+				#Add in the bounceback
+				velocity.y = jump_velocity
+				velocity.x = checkRayCast().x*2
+				velocity.z = checkRayCast().z*2
+				wall_jumps -= 1
+		elif canDJump:
+			if double_jumps <= 0:
+				pass
+			else:
+				velocity.y = jump_velocity
+				double_jumps -= 1
+	#Do later
 	if Input.is_action_just_pressed("pause"):
-		Pause()
+		get_tree().quit()
+		#Pause()
+
+func checkRayCast():
+	var direction = wallJumpRay.target_position * - 1
+	return direction
+
 #Pause, completely pauses everything so you can go into options
 func Pause():
 	if get_tree().paused == false:
