@@ -1,7 +1,11 @@
-[gd_scene load_steps=3 format=3 uid="uid://c8jxvgc60xvd3"]
+[gd_scene load_steps=5 format=3 uid="uid://c8jxvgc60xvd3"]
 
 [ext_resource type="Script" path="res://Scripts/enemies/enemy_manager.gd" id="1_wjqfg"]
 [ext_resource type="PackedScene" uid="uid://dvvcqcudqqt0f" path="res://Scenes/Enemies/support.tscn" id="2_jwpc5"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_8b0fv"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_0un22"]
 
 [node name="EnemyManager" type="Node3D"]
 script = ExtResource("1_wjqfg")
@@ -19,3 +23,13 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.46689, 0, -1.46223)
 
 [node name="Support5" parent="." instance=ExtResource("2_jwpc5")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.96403, 0, 2.38377)
+
+[node name="Leader" type="CharacterBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20.1743, 0, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Leader"]
+shape = SubResource("BoxShape3D_8b0fv")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Leader"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.4598, 0, 0)
+mesh = SubResource("BoxMesh_0un22")

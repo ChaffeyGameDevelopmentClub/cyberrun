@@ -12,6 +12,8 @@ const JUMP_VELOCITY = 4.5
 
 var rng
 var randPos
+var nearTimeout := true
+var nearest
 
 #Status
 var inAir : bool
@@ -22,6 +24,8 @@ var deployed : bool
 #arrays
 var friendlys 
 var disToFriend : Array
+var near : Array
+var nearNum : Array
 
 enum ENTITY_STATE{
 	Idle,
@@ -38,11 +42,15 @@ func _ready() -> void:
 	#Array
 	friendlys = get_parent().get_children()
 func _physics_process(delta: float) -> void:
-	#puts distances in a array
-	for i in friendlys.size():
-		disToFriend.push_back(getDistance(self.position,friendlys[i].position))
-		#print(self.name+" "+friendlys[i].name+" "+str(disToFriend[i]))
-		i+=1
+	if nearTimeout:
+		#puts distances in a array
+		for i in friendlys.size():
+			print(self.name + " Distance: " + str(getDistance(self.position,friendlys[i].position)) + " SelfPos: " + str(self.position) + " FriendlyPos: " + str(friendlys[i].position))
+			disToFriend.push_back(getDistance(self.position,friendlys[i].position))
+			#print(self.name+" "+friendlys[i].name+" "+str(disToFriend[i]))
+			i+=1
+		nearTimeout = false
+		#print(disToFriend)
 	
 	match entity_state:
 		
@@ -51,18 +59,18 @@ func _physics_process(delta: float) -> void:
 			if true:
 				randPos = setRandomPos()
 				#print(randPos)
-				entity_state = 1
+				entity_state = 2
 		1:#Wander
 			#wander within a range till fight starts
-			
+			#Don't fucking work
 			if navAgent.distance_to_target() <= 1 and wanderTimer.is_stopped():
 				#timer
 				wanderTimer.start()
-				print("TimerStarted")
+				#print("TimerStarted")
 				velocity = Vector3(0,0,0)
 			else: 
 				moveTo(randPos)
-				print(self.name +" "+str(randPos))
+				#print(self.name +" "+str(randPos))
 				if stuckTimer.is_stopped():
 					stuckTimer.start()
 		2:#Follow
@@ -71,21 +79,24 @@ func _physics_process(delta: float) -> void:
 			#make grunts group up when near support to assits the deploy function
 			#Check if near 3
 			var a
-			var near : Array
 			var target
 			for i in friendlys.size():
-				if disToFriend[i] <= 5:
-					a=+1
-					near.push_back(friendlys[i])
-				var nearest = near.min()
-				for o in friendlys.size():
-					if nearest == disToFriend[o]:
-						target = friendlys[o]
-				if !target == 'null':
-					moveTo(target)
-				if a >= 3:
-					entity_state = 3
-			pass
+				if friendlys[i].name == "Leader":
+					moveToArea(friendlys[i])
+					
+				#if disToFriend[i] >= 3:
+					#a=+1
+					#near.push_back(friendlys[i])
+					#nearNum.push_back(disToFriend[i])
+				#nearest = nearNum.min()
+				#print(nearest)
+			#for o in friendlys.size():
+				#if nearest == disToFriend[o]:
+				#	target = friendlys[o]
+			#if !target == null:
+				#moveTo(target.position)
+			#if a >= 3:
+				#entity_state = 3
 		3:#Deploy
 			#idea is to deploy shield when around Num of enimies, and undeploy if num < amount needed
 			if friendlys.lengeth >= 3:
@@ -134,6 +145,14 @@ func moveTo(target):
 	var Newvelocity = (next_nav_point - global_transform.origin).normalized() * SPEED
 	set_velocity(Newvelocity)
 
+func moveToArea(target):
+	navAgent.set_target_position(target.position)
+	var next_nav_point = navAgent.get_next_path_position()
+	var Newvelocity = (next_nav_point - global_transform.origin).normalized() * SPEED
+	set_velocity(Newvelocity)
+	if getDistance(self.position,target.position) < 2:
+		set_velocity(Vector3(0,0,0))
+
 func setRandomPos():
 	var pos = Vector3(rng.randi_range(self.position.x-5,self.position.x+5),0,rng.randi_range(self.position.z-5,self.position.z+5))
 	return pos
@@ -155,7 +174,11 @@ func _on_wander_timer_timeout() -> void:
 	#print("Timeout")
 
 func _on_stuck_timer_timeout() -> void:
-	print("timeout")
+	#print("timeout")
 	velocity = Vector3(0,0,0)
 	rng = RandomNumberGenerator.new()
 	entity_state = 0
+
+
+func _on_timer_near_timeout() -> void:
+	nearTimeout = true

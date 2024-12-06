@@ -33,6 +33,9 @@ wait_time = 10.0
 [node name="WanderTimer" type="Timer" parent="Timers"]
 one_shot = true
 
+[node name="Near Timer" type="Timer" parent="Timers"]
+autostart = true
+
 [node name="HealthComponent" parent="." instance=ExtResource("2_5d7ey")]
 
 [node name="HitboxComponent" parent="." node_paths=PackedStringArray("health_component") instance=ExtResource("3_0grm3")]
@@ -46,4 +49,5 @@ script = ExtResource("4_geu4e")
 
 [connection signal="timeout" from="Timers/StuckTimer" to="." method="_on_stuck_timer_timeout"]
 [connection signal="timeout" from="Timers/WanderTimer" to="." method="_on_wander_timer_timeout"]
+[connection signal="timeout" from="Timers/Near Timer" to="." method="_on_timer_near_timeout"]
 [connection signal="area_entered" from="HitboxComponent" to="weapon" method="_on_hitbox_component_area_entered"]
