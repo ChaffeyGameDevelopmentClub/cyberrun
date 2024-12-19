@@ -1,0 +1,53 @@
+[gd_scene load_steps=8 format=3 uid="uid://dvvcqcudqqt0f"]
+
+[ext_resource type="Script" path="res://Scripts/enemies/support.gd" id="1_t0f0g"]
+[ext_resource type="PackedScene" uid="uid://b6dopup0oon2i" path="res://Scripts/Components/health_component.tscn" id="2_5d7ey"]
+[ext_resource type="PackedScene" uid="uid://cmnmh2icsbogp" path="res://Scripts/Components/hitbox_component.tscn" id="3_0grm3"]
+[ext_resource type="Script" path="res://Scripts/Components/Scripts/weapon.gd" id="4_geu4e"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_7gfnf"]
+albedo_color = Color(0, 0.763155, 0.753883, 1)
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_pdndp"]
+material = SubResource("StandardMaterial3D_7gfnf")
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_jn774"]
+
+[node name="Support" type="CharacterBody3D" node_paths=PackedStringArray("navAgent")]
+script = ExtResource("1_t0f0g")
+navAgent = NodePath("NavigationAgent3D")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+mesh = SubResource("CapsuleMesh_pdndp")
+
+[node name="Collision" type="CollisionShape3D" parent="."]
+shape = SubResource("CapsuleShape3D_jn774")
+
+[node name="NavigationAgent3D" type="NavigationAgent3D" parent="."]
+
+[node name="Timers" type="Node" parent="."]
+
+[node name="StuckTimer" type="Timer" parent="Timers"]
+wait_time = 10.0
+
+[node name="WanderTimer" type="Timer" parent="Timers"]
+one_shot = true
+
+[node name="Near Timer" type="Timer" parent="Timers"]
+autostart = true
+
+[node name="HealthComponent" parent="." instance=ExtResource("2_5d7ey")]
+
+[node name="HitboxComponent" parent="." node_paths=PackedStringArray("health_component") instance=ExtResource("3_0grm3")]
+health_component = NodePath("../HealthComponent")
+
+[node name="Hitbox Shape" type="CollisionShape3D" parent="HitboxComponent"]
+shape = SubResource("CapsuleShape3D_jn774")
+
+[node name="weapon" type="Node3D" parent="."]
+script = ExtResource("4_geu4e")
+
+[connection signal="timeout" from="Timers/StuckTimer" to="." method="_on_stuck_timer_timeout"]
+[connection signal="timeout" from="Timers/WanderTimer" to="." method="_on_wander_timer_timeout"]
+[connection signal="timeout" from="Timers/Near Timer" to="." method="_on_timer_near_timeout"]
+[connection signal="area_entered" from="HitboxComponent" to="weapon" method="_on_hitbox_component_area_entered"]
