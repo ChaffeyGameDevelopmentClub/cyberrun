@@ -1,7 +1,7 @@
 [gd_scene load_steps=18 format=3 uid="uid://r3ba0spek7fo"]
 
 [ext_resource type="PackedScene" uid="uid://di552ovbiyxq0" path="res://Scenes/Player/player.tscn" id="1_t1b7e"]
-[ext_resource type="PackedScene" uid="uid://c8jxvgc60xvd3" path="res://Scenes/Enemies/enemy_manager.tscn" id="2_fo132"]
+[ext_resource type="PackedScene" uid="uid://bvg8clwq15nq2" path="res://Scenes/Enemies/charger.tscn" id="2_wqq6v"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_6wf8v"]
 sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
@@ -62,9 +62,6 @@ shadow_enabled = true
 environment = SubResource("Environment_6wwgj")
 
 [node name="Player" parent="." instance=ExtResource("1_t1b7e")]
-
-[node name="EnemyManager" parent="." instance=ExtResource("2_fo132")]
-transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 6.46901, 1.88231, -3.47438)
 
 [node name="NavigationRegion3D" type="NavigationRegion3D" parent="."]
 navigation_mesh = SubResource("NavigationMesh_6clb4")
@@ -152,3 +149,7 @@ skeleton = NodePath("../MeshInstance3D2")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="NavigationRegion3D/World/MeshInstance3D8/StaticBody3D"]
 shape = SubResource("ConcavePolygonShape3D_66gd0")
+
+[node name="Charger" parent="." node_paths=PackedStringArray("player") instance=ExtResource("2_wqq6v")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22.6122, 1, -5)
+player = NodePath("../Player")

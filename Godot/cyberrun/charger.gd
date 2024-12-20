@@ -60,21 +60,13 @@ func _physics_process(delta: float) -> void:
 				inAir = false
 				vulnerable = false
 
-	# Add the gravity.
-	if not is_on_floor():
-		velocity += get_gravity() * delta
 
-	# Handle jump.
 
-		velocity.y = JUMP_VELOCITY
 
 	# Get the input direction and handle the movement/deceleration.
 	# As good practice, you should replace UI actions with custom gameplay actions.
 	
 
-	else:
-		velocity.x = move_toward(velocity.x, 0, SPEED)
-		velocity.z = move_toward(velocity.z, 0, SPEED)
 
 	move_and_slide()
 #function
@@ -83,7 +75,7 @@ func setTarget(target):
 func get_player_pos():
 	var playerPos=player.transform.origin
 	return playerPos
-func moveTo(target):
+func moveTo(target): 
 	navAgent.set_target_position(target)
 	var next_nav_point=navAgent.get_next_path_position()
 	var Newvelocity=(next_nav_point-global_transform.origin).normalized()* SPEED

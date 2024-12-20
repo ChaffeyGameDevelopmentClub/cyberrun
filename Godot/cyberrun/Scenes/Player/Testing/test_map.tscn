@@ -1,7 +1,8 @@
-[gd_scene load_steps=27 format=3 uid="uid://c635fdneot0qn"]
+[gd_scene load_steps=28 format=3 uid="uid://crdi2q4miqxty"]
 
 [ext_resource type="PackedScene" uid="uid://1mq2syna5chq" path="res://Scenes/Player/Testing/Test Map.glb" id="1_if85p"]
 [ext_resource type="PackedScene" uid="uid://di552ovbiyxq0" path="res://Scenes/Player/player.tscn" id="2_218we"]
+[ext_resource type="PackedScene" uid="uid://bvg8clwq15nq2" path="res://Scenes/Enemies/charger.tscn" id="3_ns2er"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_4wbsr"]
 sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
@@ -81,10 +82,13 @@ data = PackedVector3Array(-7, 0, -21.8669, -5.8817, 0, -21, -5.8817, 0, -21.8765
 
 [node name="TestMap" instance=ExtResource("1_if85p")]
 
-[node name="WorldEnvironment" type="WorldEnvironment" parent="." index="0"]
+[node name="NavigationRegion3D" type="NavigationRegion3D" parent="." index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.00966, 1.4766, 0.590321)
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." index="1"]
 environment = SubResource("Environment_8suhp")
 
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." index="1"]
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." index="2"]
 transform = Transform3D(-0.866025, -0.433013, 0.25, 0, 0.5, 0.866025, -0.5, 0.75, -0.433013, 0, 0, 0)
 shadow_enabled = true
 
@@ -193,5 +197,9 @@ shape = SubResource("ConcavePolygonShape3D_0y3xn")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Stair_005/StaticBody3D" index="0"]
 shape = SubResource("ConcavePolygonShape3D_gh8m5")
 
-[node name="Player" parent="." index="23" instance=ExtResource("2_218we")]
+[node name="Player" parent="." index="24" instance=ExtResource("2_218we")]
 transform = Transform3D(2.5, 0, 0, 0, 2.5, 0, 0, 0, 2.5, 0.465471, 1.15357, -0.00609326)
+
+[node name="Charger" parent="." index="25" node_paths=PackedStringArray("player") instance=ExtResource("3_ns2er")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.00966, 1.4766, 0.590321)
+player = NodePath("../Player")
